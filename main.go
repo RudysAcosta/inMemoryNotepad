@@ -7,10 +7,15 @@ import (
 	"strings"
 )
 
+var maxNote int
+
 func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	var notes []string
+
+	fmt.Printf("Enter the maximum number of notes:")
+	fmt.Scanln(&maxNote)
 
 	for {
 		fmt.Print("Enter a command and data:")
@@ -23,12 +28,22 @@ func main() {
 			fmt.Println("[Info] Bye!")
 			os.Exit(0)
 		} else if command == "create" {
-			create(&notes, data)
+			if strings.Trim(data, " ") == "" {
+				fmt.Println("[Error] Missing note argument")
+			} else {
+				create(&notes, data)
+			}
 		} else if command == "clear" {
 			notes = notes[:0]
 			fmt.Println("[OK] All notes were successfully deleted")
 		} else if command == "list" {
-			list(&notes)
+			if len(notes) == 0 {
+				fmt.Println("[Info] Notepad is empty")
+			} else {
+				list(&notes)
+			}
+		} else {
+			fmt.Println("[Error] Unknown command")
 		}
 
 		fmt.Println()
@@ -37,7 +52,7 @@ func main() {
 }
 
 func create(notes *[]string, note string) {
-	if len(*notes) < 5 {
+	if len(*notes) < maxNote {
 		*notes = append(*notes, note)
 		fmt.Println("[OK] The note was successfully created")
 	} else {
